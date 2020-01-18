@@ -25,9 +25,9 @@ SECRET_KEY = 'k_u2xol&a_1hkpzgj+^omwhqjz)cn01!qn3)=i^=oqeo!wcb+d'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', 'dev.cp-online.in', '13.59.55.174']
+ALLOWED_HOSTS = ['*', 'dev.cp-online.in', '3.135.244.164', 'cp-online.in']
 
-
+HTTPS = True
 # Application definition
 
 INSTALLED_APPS = [
