@@ -4,8 +4,13 @@ import json
 from .models import RoomData
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
+        self.room_name = None
+        if len(self.scope['url_route']['kwargs'])> 0:
+            self.room_name = self.scope['url_route']['kwargs']['room_name']
+        if not self.room_name:
+            self.room_name = self.scope.get("client")[0]
+        print(self.scope['url_route']['kwargs'], '__________________')
 
-        self.room_name = self.scope.get("client")[0]
         self.room_group_name = 'chat_%s' % self.room_name
         # Join room group
 

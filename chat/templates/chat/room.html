@@ -3,9 +3,11 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <title>Room</title>
+    <title>
+        {{ "cp-online.in" }}
+    </title>
     <style rel="stylesheet">
-      * {
+      * {var1
         box-sizing: border-box;
       }
 
@@ -124,14 +126,20 @@
 </body>
 <script>
 
-    var Socket = new WebSocket(
-        'ws://' + "cp-online.in" +
-        '/ws/');
+<!--    var Socket = new WebSocket(-->
+<!--        'ws://' + "127.0.0.1:8000" +-->
+<!--        '/ws/');-->
+    var roomName = {{ room_name_json }};
+    roomName ? window.document.title = roomName : window.document.title = "cp-online.in"
+    var Socket = roomName ? new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/' + roomName + '/') : new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/')
 
 
     Socket.onmessage = function(e) {
         var data = JSON.parse(e.data);
-        console.error(data)
         var message = data['message'];
         document.querySelector('#chat-log').value = (message + '\n');
     };
@@ -150,7 +158,6 @@
     document.querySelector('#chat-message-submit').onclick = function(e) {
         var messageInputDom = document.querySelector('#chat-log');
         var message = messageInputDom.value;
-        console.log(message)
         Socket.send(JSON.stringify({
             'message': message
         }));
