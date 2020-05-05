@@ -1,10 +1,10 @@
 <!-- chat/templates/chat/room.html -->
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8"/>
+  <head>
+    <meta charset="utf-8" />
     <title>
-        {{ "cp-online.in" }}
+      {{ "cp-online.in" }}
     </title>
     <style rel="stylesheet">
       * {var1
@@ -90,81 +90,107 @@
         background-color: white;
         color: black;
       }
-
-
     </style>
     <script
-            src="https://code.jquery.com/jquery-3.4.1.min.js"
-            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-            crossorigin="anonymous"></script>
-</head>
-<body>
-<div class="header">
-    <a href="dev.cp-online.in" class="logo">dev.cp-online.in</a>
-    <div class="header-right">
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="header">
+      <a href="#" class="logo">cp-online.in</a>
+      <div class="header-right">
         <a href="#home">Home</a>
-        <a href="#contact">Contact</a>
-        <a href="#about">About</a>
+      </div>
     </div>
-</div>
-<div>
-    <textarea id="chat-log" class="chat-log" cols="100" rows="20" placeholder="Your text will be here" ></textarea><br/>
-<!--    <input-->
-<!--            id="chat-message-input"-->
-<!--            class="input-msg"-->
-<!--            type="text"-->
-<!--            size="100"-->
-<!--            placeholder="Enter Text"-->
-<!--    /><br/>-->
-    <input
-            id="chat-message-submit"
-            type="button"
-            class="submit"
-            value="Refresh"
-    />
-</div>
-</body>
-<script>
+    <div>
+      <textarea
+        id="chat-log"
+        class="chat-log"
+        cols="100"
+        rows="20"
+        placeholder="Your text will be here"
+      ></textarea
+      ><br />
+      <!--    <input-->
+      <!--            id="chat-message-input"-->
+      <!--            class="input-msg"-->
+      <!--            type="text"-->
+      <!--            size="100"-->
+      <!--            placeholder="Enter Text"-->
+      <!--    /><br/>-->
+      <input
+        id="chat-message-submit"
+        type="button"
+        class="submit"
+        value="Refresh"
+      />
+    </div>
+  </body>
+  <script>
+    let isClicked = false
+    function notifyMe() {
+            if (!window.Notification) {
+              console.error("Browser does not support notifications.");
+            } else {
+              // check if permission is already granted
+              if (Notification.permission === "granted") {
+                // show notification here
+                var notify = new Notification("Hi", {
+                  body: "Content is Updated...",
+                  icon: "https://img.icons8.com/doodle/2x/online.png",
+                });
+              } else {
+                // request permission from user
+                Notification.requestPermission()
+                  .then(function (p) {
+                    if (p === "granted") {
+                      // show notification here
+                      var notify = new Notification("Hi", {
+                        body: "Content is Updated...",
+                        icon: "https://img.icons8.com/doodle/2x/online.png",
+                      });
+                    } else {
+                      console.error("User blocked notifications.");
+                    }
+                  })
+                  .catch(function (err) {
+                    console.error(err);
+                  });
+              }
+            }
+          }
 
-<!--    var Socket = new WebSocket(-->
-<!--        'ws://' + "127.0.0.1:8000" +-->
-<!--        '/ws/');-->
-    var roomName = {{ room_name_json }};
-    roomName ? window.document.title = roomName : window.document.title = "cp-online.in"
-    var Socket = roomName ? new WebSocket(
-        'ws://' + window.location.host +
-        '/ws/' + roomName + '/') : new WebSocket(
-        'ws://' + window.location.host +
-        '/ws/')
+        var roomName = {{ room_name_json }};
+        roomName ? window.document.title = roomName : window.document.title = "cp-online.in"
+        var Socket = roomName ? new WebSocket(
+            'ws://' + window.location.host +
+            '/ws/' + roomName + '/') : new WebSocket(
+            'ws://' + window.location.host +
+            '/ws/')
 
 
-    Socket.onmessage = function(e) {
-        var data = JSON.parse(e.data);
-        var message = data['message'];
-        document.querySelector('#chat-log').value = (message + '\n');
-    };
+        Socket.onmessage = function(e) {
+            var data = JSON.parse(e.data);
+            var message = data['message'];
+            document.querySelector('#chat-log').value = (message + '\n');
+            if(!isClicked)
+              notifyMe();
+            else
+              isClicked = false
+        };
 
-    Socket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
-    };
+        Socket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
 
-<!--    document.querySelector('#chat-message-input').focus();-->
-<!--    document.querySelector('#chat-message-input').onkeyup = function(e) {-->
-<!--        if (e.keyCode === 13) {  // enter, return-->
-<!--            document.querySelector('#chat-message-submit').click();-->
-<!--        }-->
-<!--    };-->
-
-    document.querySelector('#chat-message-submit').onclick = function(e) {
-        var messageInputDom = document.querySelector('#chat-log');
-        var message = messageInputDom.value;
-        Socket.send(JSON.stringify({
-            'message': message
-        }));
-
-<!--        messageInputDom.value = '';-->
-    };
-
-
-</script>
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            isClicked = true
+            var messageInputDom = document.querySelector('#chat-log');
+            var message = messageInputDom.value;
+            Socket.send(JSON.stringify({
+                'message': message
+            }));}
+  </script>
 </html>
